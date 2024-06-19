@@ -1,66 +1,80 @@
 #include <graphics.h>
 #include <iostream>
-#include <string> // Include string header for to_string function
+#include <string>
+#include <ctime>
+#include <cstdlib>
+#include <locale.h>
 
 using namespace std;
 
-// Function to display the main menu
+const char *Names_Sex[2][10];
+
+void initializeNamesSex() {
+    Names_Sex[0][0] = "Alice";
+    Names_Sex[0][1] = "Emma";
+    Names_Sex[0][2] = "Olivia";
+    Names_Sex[0][3] = "Sophia";
+    Names_Sex[0][4] = "Isabella";
+    Names_Sex[0][5] = "Mia";
+    Names_Sex[0][6] = "Ava";
+    Names_Sex[0][7] = "Charlotte";
+    Names_Sex[0][8] = "Amelia";
+    Names_Sex[0][9] = "Evelyn";
+
+    Names_Sex[1][0] = "Liam";
+    Names_Sex[1][1] = "Noah";
+    Names_Sex[1][2] = "Oliver";
+    Names_Sex[1][3] = "William";
+    Names_Sex[1][4] = "Elijah";
+    Names_Sex[1][5] = "James";
+    Names_Sex[1][6] = "Benjamin";
+    Names_Sex[1][7] = "Lucas";
+    Names_Sex[1][8] = "Henry";
+    Names_Sex[1][9] = "Alexander";
+
+    Names_Sex[2][0] = "F";
+    Names_Sex[2][1] = "M";
+}
+
 void displayMenu() {
-    // Clear screen and display menu options
     cleardevice();
-    setcolor(WHITE);
     settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-    outtextxy(100, 100, "Paper's Please Infinite");
-    outtextxy(100, 150, "Press any key to start...");
+    setcolor(YELLOW);
+    outtextxy(300, 100, "Slavograd");
+    setcolor(WHITE);
+    outtextxy(100, 150, "Aperte algo para começar...");
 }
 
-// Function to play the game
-void playGame() {
-    int lives = 3;
-    int score = 0;
 
-    while (lives > 0) {
-        // Game logic goes here
-        // Display game elements
-        // Check for input
-        // Update score and lives
-
-        // For example, you could draw the game interface and update score/lives here
-        cleardevice();
-        setcolor(WHITE);
-        settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
-
-        delay(1000); // Delay to make the game playable
-        score++; // Increment score for demonstration
-        // Simulate game over by reducing lives after certain conditions
-        // For demonstration, we just reduce lives after every iteration
-        lives--;
-    }
-
-    // Display game over screen
-    cleardevice();
-    setcolor(WHITE);
-    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-    outtextxy(100, 100, "Game Over!");
-    outtextxy(100, 200, "Press any key to exit...");
-}
 
 int main() {
-    // Initialize graphics
-    int gd = DETECT, gm;
-    initgraph(&gd, &gm, "");
+    setlocale(LC_ALL, "Portuguese_Brazil");
+    srand(time(NULL));
 
-    // Display main menu
+
+
+    unsigned short int tipo = rand() % 2;
+    unsigned short int quantidade = rand() % 3 + 1;
+    for (int i = 0; i < quantidade; ++i) {
+        unsigned short int mentira = rand() % 8 + 1;
+
+    }
+
+    //falso ====================================================//
+    if (tipo == 0) {
+    initializeNamesSex();
+    }
+    //falso ====================================================//
+    //verdade ====================================================//
+    else if (tipo == 1) {
+    initializeNamesSex();
+    }
+    //verdade ====================================================//
+    initwindow(getmaxwidth(), getmaxheight(), "Slavograd");
+
     displayMenu();
 
-    // Wait for user input to start the game
     getch();
-
-    // Start the game
-    playGame();
-
-    // Close graphics
-    closegraph();
 
     return 0;
 }
