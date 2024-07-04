@@ -3,8 +3,8 @@
 #include <time.h>
 #include <raylib.h>
 #include <string.h>
-#define MAX_INPUT_CHARS 24
 
+#define MAX_INPUT_CHARS 24
 
 int tipo, quantidade;
 int mentira0, mentira01, mentira02;
@@ -12,6 +12,7 @@ int idade_saida, idade_saida01;
 const char *saida_sexo;
 char saida_Nome[20];
 char saida_pais[30];
+//Fiz como eu disse na apresentação e coloquei os nomes aqui, so tinha deixando pois achei que não faria diferença, mas juro que não usei o chat_gpt apenas queria testar mais as funçoes.
 const char *Nomes_e_sexo[3][10] = {
     {"Hilda", "Astrid", "Freya", "Solveig", "Sigrid", "Ingrid", "Ava", "Lagertha", "Aslaug", "Frida"},
     {"Ragnar", "Bjorn", "Ivor", "Arne", "Elijah", "Thor", "Frode", "Leif", "Trygve", "Tyr"},
@@ -21,6 +22,14 @@ int age[2][70];
 char rg1[9], rg2[9];
 char documento[20];
 int erro_nome, erro_sexo;
+
+typedef struct {
+    Rectangle bounds;
+    Color color;
+    bool hover;
+    const char* label;
+    int action;
+} Button;
 
 void Iniciar_idade() {
     for (int i = 0; i < 70; ++i) {
@@ -47,17 +56,12 @@ void gerar_Dados() {
         erro_nome = 1;
     }
 
-
-
-
     if (strcmp(saida_pais, "Slavograd") == 0) {
         if (mentira0 == 4) mentira0 = rand() % 3 + 1;
         if (mentira01 == 4) mentira01 = rand() % 3 + 1;
         if (mentira02 == 4) mentira02 = rand() % 3 + 1;
     }
-
 }
-
 
 void gerar_Sexo_E_Nome() {
     int saida_sexo01 = rand() % 2;
@@ -66,14 +70,13 @@ void gerar_Sexo_E_Nome() {
     int saida_sexo02 = rand() % 10;
 
     if (erro_nome == 1) {
-
         if (saida_sexo01 == 0) {
             strcpy(saida_Nome, Nomes_e_sexo[1][saida_sexo02]);
         } else {
             strcpy(saida_Nome, Nomes_e_sexo[0][saida_sexo02]);
         }
     } else {
-        // Gerar nome corretamente
+
         if (saida_sexo01 == 0) {
             strcpy(saida_Nome, Nomes_e_sexo[0][saida_sexo02]);
         } else {
@@ -85,7 +88,6 @@ void gerar_Sexo_E_Nome() {
         saida_sexo = (saida_sexo[0] == 'F') ? "M" : "F";
     }
 }
-
 
 void gerar_Idade() {
     if (tipo == 1 && (mentira0 == 2 || mentira01 == 2 || mentira02 == 2)) {
@@ -107,7 +109,6 @@ void gerar_Pais() {
 }
 
 void verificar_Documentos() {
-
     if (tipo == 0 ) {
         strcpy(documento, "Tem passe");
     } else if (tipo == 1 && (mentira0 == 4 || mentira01 == 4 || mentira02 == 4)) {
@@ -138,7 +139,31 @@ void gerar_RG() {
         strcpy(rg2, rg1);
     }
 }
-
+//mudei a logica dos botões para usarem um switch case, se tivesse mais tempo colocaria um menu ao apertar esc usando o switch break também.
+void acao_do_botao(int action, char* resultMessage, bool* showResult, bool* gameStart) {
+    switch (action) {
+        case 1:
+            if (tipo == 0) {
+                strcpy(resultMessage, "Voce acertou!");
+            } else {
+                strcpy(resultMessage, "Voce errou!");
+            }
+            *showResult = true;
+            *gameStart = false;
+            break;
+        case 2:
+            if (tipo == 1) {
+                strcpy(resultMessage, "Voce acertou!");
+            } else {
+                strcpy(resultMessage, "Voce errou!");
+            }
+            *showResult = true;
+            *gameStart = false;
+            break;
+        default:
+            break;
+    }
+}
 
 int main() {
     InitWindow(1280, 720, "Menu");
@@ -154,8 +179,6 @@ int main() {
     Color messageButtonColor = BLUE;
     bool playButtonHover = false;
     bool messageButtonHover = false;
-
-
 
     while (!WindowShouldClose()) {
         if (CheckCollisionPointRec(GetMousePosition(), playButtonBounds)) {
@@ -227,30 +250,24 @@ int main() {
         Texture2D errado = LoadTexture("./errado.png");
         Texture2D certo = LoadTexture("./certo.png");
 
-
         bool mostrarSprite = true;
         bool gameStart = false;
         bool showResult = false;
         char resultMessage[30] = "";
 
-        Rectangle correctButtonBounds = { 540, 520, 200, 50 };
-        Rectangle incorrectButtonBounds = { 540, 590, 200, 50 };
-        Color correctButtonColor = GREEN;
-        Color incorrectButtonColor = RED;
-        bool correctButtonHover = false;
-        bool incorrectButtonHover = false;
+        Button correctButton = { { 540, 520, 200, 50 }, GREEN, false, "", 1 };
+        Button incorrectButton = { { 540, 590, 200, 50 }, RED, false, "", 2 };
 
         while (!WindowShouldClose()) {
             if (IsKeyPressed(KEY_C)) {
-            mostrarSprite = false;
+                mostrarSprite = false;
             }
-
 
             BeginDrawing();
             ClearBackground(RAYWHITE);
 
             if(mostrarSprite){
-               DrawTexture(sprite, 0, 720 - sprite.height, WHITE);
+                DrawTexture(sprite, 0, 720 - sprite.height, WHITE);
             } else {
                 DrawTexture(fundo, 0, 0, WHITE);
                 DrawTexture(alea, 960, 300, WHITE);
@@ -258,52 +275,32 @@ int main() {
                 DrawTexture(familia, 60, 580, WHITE);
             }
 
-            if (CheckCollisionPointRec(GetMousePosition(), correctButtonBounds)) {
-                correctButtonColor = LIGHTGRAY;
-                correctButtonHover = true;
+            if (CheckCollisionPointRec(GetMousePosition(), correctButton.bounds)) {
+                correctButton.color = LIGHTGRAY;
+                correctButton.hover = true;
 
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-
-                    if (tipo == 0) {
-                        strcpy(resultMessage, "Voce acertou!");
-                    } else {
-                        strcpy(resultMessage, "Voce errou!");
-                    }
-                    showResult = true;
-                    gameStart = false;
-
+                   acao_do_botao(correctButton.action, resultMessage, &showResult, &gameStart);
                 }
             } else {
-                correctButtonColor = GREEN;
-                correctButtonHover = false;
+                correctButton.color = GREEN;
+                correctButton.hover = false;
             }
 
-            if (CheckCollisionPointRec(GetMousePosition(), incorrectButtonBounds)) {
-                incorrectButtonColor = LIGHTGRAY;
-                incorrectButtonHover = true;
+            if (CheckCollisionPointRec(GetMousePosition(), incorrectButton.bounds)) {
+                incorrectButton.color = LIGHTGRAY;
+                incorrectButton.hover = true;
 
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-
-                    if (tipo == 1) {
-                        strcpy(resultMessage, "Voce acertou!");
-                    } else {
-                        strcpy(resultMessage, "Voce errou!");
-                    }
-                    showResult = true;
-                    gameStart = false;
-
+                    acao_do_botao(incorrectButton.action, resultMessage, &showResult, &gameStart);
                 }
-
             } else {
-                incorrectButtonColor = RED;
-                incorrectButtonHover = false;
+                incorrectButton.color = RED;
+                incorrectButton.hover = false;
             }
-
 
             BeginDrawing();
             ClearBackground(DARKBLUE);
-
-
 
             if (!gameStart && !showResult) {
                 DrawTextEx(BMmini, "aperte C para iniciar!", (Vector2){ 480, 610 }, 30, 1, WHITE);
@@ -316,48 +313,44 @@ int main() {
                     gerar_Idade();
                     gerar_RG();
                     gerar_Pais();
-                    verificar_Documentos();
-
+                    verificar_Documentos();//por algum motivo de vez enquanto,  ao começar o código o passe não e mostrando, então eu pedi pra pedir duas vezes na primeira vez que é pedido.
+                    verificar_Documentos();//se voce poder me explicar porque isso aconteçe ficaria muito feliz.Mas ele esta funcionando assim.
                 }
             } else if (gameStart) {
                 ClearBackground(RAYWHITE);
 
-                DrawTextEx(BMmini, "Sexo: ", (Vector2){ 20, 20 }, 40, 1, WHITE);
-                DrawText(saida_sexo, 150, 20, 35, GOLD);
+                DrawTextEx(BMmini, "Sexo: ", (Vector2){ 20, 20 }, 40, 1, GRAY);
+                DrawText(saida_sexo, 150, 20, 35, ORANGE);
 
-                DrawTextEx(BMmini, "Nome: ", (Vector2){ 20, 100 }, 40, 1, WHITE);
-                DrawText(saida_Nome, 160, 100, 35, GOLD);
+                DrawTextEx(BMmini, "Nome: ", (Vector2){ 20, 100 }, 40, 1, GRAY);
+                DrawText(saida_Nome, 160, 100, 35, ORANGE);
 
-                DrawTextEx(BMmini, "Idade: ", (Vector2){ 20, 140 }, 40, 1, WHITE);
-                DrawText(TextFormat("%d", idade_saida), 180, 140, 35, GOLD);
+                DrawTextEx(BMmini, "Idade: ", (Vector2){ 20, 140 }, 40, 1, GRAY);
+                DrawText(TextFormat("%d", idade_saida), 180, 140, 35, ORANGE);
 
-                DrawTextEx(BMmini, "RG1: ", (Vector2){ 20, 240 }, 40, 1, WHITE);
-                DrawText(rg1, 120, 240, 30, GOLD);
+                DrawTextEx(BMmini, "RG1: ", (Vector2){ 20, 240 }, 40, 1, GRAY);
+                DrawText(rg1, 120, 240, 30, ORANGE);
 
-                DrawTextEx(BMmini, "RG2: ", (Vector2){ 20, 280 }, 40, 1, WHITE);
-                DrawText(rg2, 120, 280, 30, GOLD);
+                DrawTextEx(BMmini, "RG2: ", (Vector2){ 20, 280 }, 40, 1, GRAY);
+                DrawText(rg2, 120, 280, 30, ORANGE);
 
-                DrawTextEx(BMmini, "Pais: ", (Vector2){ 20, 400 }, 40, 1, WHITE);
-                DrawText(saida_pais, 130, 402, 30, GOLD);
+                DrawTextEx(BMmini, "Pais: ", (Vector2){ 20, 400 }, 40, 1, GRAY);
+                DrawText(saida_pais, 130, 402, 30, ORANGE);
 
-                DrawTextEx(BMmini, "Passe: ", (Vector2){ 20, 450 }, 40, 1, WHITE);
-                DrawText(documento, 170, 452, 30, GOLD);
+                DrawTextEx(BMmini, "Passe: ", (Vector2){ 20, 450 }, 40, 1, GRAY);
+                DrawText(documento, 170, 452, 30, ORANGE);
 
-                DrawRectangleRec(correctButtonBounds, correctButtonHover ? DARKGRAY : correctButtonColor);
-                DrawTextEx(BMmini, "", (Vector2){ correctButtonBounds.x + 28, correctButtonBounds.y + 15 }, 30, 1, WHITE);
+                DrawRectangleRec(correctButton.bounds, correctButton.hover ? DARKGRAY : correctButton.color);
+                DrawTextEx(BMmini, "", (Vector2){ correctButton.bounds.x + 28, correctButton.bounds.y + 15 }, 30, 1, WHITE);
                 DrawTexture(certo, 605, 505, WHITE);
 
-                DrawRectangleRec(incorrectButtonBounds, incorrectButtonHover ? DARKGRAY : incorrectButtonColor);
-                DrawTextEx(BMmini, "", (Vector2){ incorrectButtonBounds.x + 32, incorrectButtonBounds.y + 15 }, 30, 1, WHITE);
+                DrawRectangleRec(incorrectButton.bounds, incorrectButton.hover ? DARKGRAY : incorrectButton.color);
+                DrawTextEx(BMmini, "", (Vector2){ incorrectButton.bounds.x + 32, incorrectButton.bounds.y + 15 }, 30, 1, WHITE);
                 DrawTexture(errado, 605, 580, WHITE);
-
-
             } else if (showResult) {
                 DrawTextEx(BMmini, resultMessage, (Vector2){ 104, 230 }, 25, 1, WHITE);
                 DrawTextEx(BMmini, "R PARA REINICIAR...", (Vector2){ 48, 260 }, 30, 1, MAROON);
                 DrawTextEx(BMmini, "-", (Vector2){ 47, 270 }, 40, 1, MAROON);
-
-
 
                 if (IsKeyPressed(KEY_R)) {
                     showResult = false;
