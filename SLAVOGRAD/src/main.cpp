@@ -3,18 +3,16 @@
 #include <time.h>
 #include <raylib.h>
 #include <string.h>
-
 #define MAX_INPUT_CHARS 24
 
-typedef enum GameScreen { LOGO_SCREEN, MENU_SCREEN, GAME_SCREEN } GameScreen;
 
 int tipo, quantidade;
 int mentira0, mentira01, mentira02;
 int idade_saida, idade_saida01;
 const char *saida_sexo;
 char saida_Nome[20];
-char saidapais[30];
-const char *Names_Sex[3][10] = {
+char saida_pais[30];
+const char *Nomes_e_sexo[3][10] = {
     {"Hilda", "Astrid", "Freya", "Solveig", "Sigrid", "Ingrid", "Ava", "Lagertha", "Aslaug", "Frida"},
     {"Ragnar", "Bjorn", "Ivor", "Arne", "Elijah", "Thor", "Frode", "Leif", "Trygve", "Tyr"},
     {"M", "F"}
@@ -23,13 +21,6 @@ int age[2][70];
 char rg1[9], rg2[9];
 char documento[20];
 int erro_nome, erro_sexo;
-
-typedef struct {
-    Rectangle bounds;
-    Color color;
-    bool hover;
-    Texture2D texture;
-} Button;
 
 void Iniciar_idade() {
     for (int i = 0; i < 70; ++i) {
@@ -56,12 +47,17 @@ void gerar_Dados() {
         erro_nome = 1;
     }
 
-    if (strcmp(saidapais, "Slavograd") == 0) {
+
+
+
+    if (strcmp(saida_pais, "Slavograd") == 0) {
         if (mentira0 == 4) mentira0 = rand() % 3 + 1;
         if (mentira01 == 4) mentira01 = rand() % 3 + 1;
         if (mentira02 == 4) mentira02 = rand() % 3 + 1;
     }
+
 }
+
 
 void gerar_Sexo_E_Nome() {
     int saida_sexo01 = rand() % 2;
@@ -70,16 +66,18 @@ void gerar_Sexo_E_Nome() {
     int saida_sexo02 = rand() % 10;
 
     if (erro_nome == 1) {
+
         if (saida_sexo01 == 0) {
-            strcpy(saida_Nome, Names_Sex[1][saida_sexo02]);
+            strcpy(saida_Nome, Nomes_e_sexo[1][saida_sexo02]);
         } else {
-            strcpy(saida_Nome, Names_Sex[0][saida_sexo02]);
+            strcpy(saida_Nome, Nomes_e_sexo[0][saida_sexo02]);
         }
     } else {
+        // Gerar nome corretamente
         if (saida_sexo01 == 0) {
-            strcpy(saida_Nome, Names_Sex[0][saida_sexo02]);
+            strcpy(saida_Nome, Nomes_e_sexo[0][saida_sexo02]);
         } else {
-            strcpy(saida_Nome, Names_Sex[1][saida_sexo02]);
+            strcpy(saida_Nome, Nomes_e_sexo[1][saida_sexo02]);
         }
     }
 
@@ -87,6 +85,7 @@ void gerar_Sexo_E_Nome() {
         saida_sexo = (saida_sexo[0] == 'F') ? "M" : "F";
     }
 }
+
 
 void gerar_Idade() {
     if (tipo == 1 && (mentira0 == 2 || mentira01 == 2 || mentira02 == 2)) {
@@ -104,10 +103,11 @@ void gerar_Pais() {
     char paises[10][20] = {
         "Nordlandia", "Fjordberg", "Glacierholm", "Aurorania", "Slavograd"
     };
-    strcpy(saidapais, paises[pais01]);
+    strcpy(saida_pais, paises[pais01]);
 }
 
 void verificar_Documentos() {
+
     if (tipo == 0 ) {
         strcpy(documento, "Tem passe");
     } else if (tipo == 1 && (mentira0 == 4 || mentira01 == 4 || mentira02 == 4)) {
@@ -139,6 +139,7 @@ void gerar_RG() {
     }
 }
 
+
 int main() {
     InitWindow(1280, 720, "Menu");
     Font BMmini = LoadFont("./BMmini.ttf");
@@ -153,6 +154,8 @@ int main() {
     Color messageButtonColor = BLUE;
     bool playButtonHover = false;
     bool messageButtonHover = false;
+
+
 
     while (!WindowShouldClose()) {
         if (CheckCollisionPointRec(GetMousePosition(), playButtonBounds)) {
@@ -181,8 +184,7 @@ int main() {
         }
 
         BeginDrawing();
-         ClearBackground(DARKBLUE);
-
+        ClearBackground(DARKBLUE);
 
         DrawTexture(logo, 315, 100, WHITE);
         DrawRectangleRec(playButtonBounds, playButtonHover ? DARKGRAY : playButtonColor);
@@ -214,6 +216,7 @@ int main() {
     CloseWindow();
 
     if (startGame) {
+
         InitWindow(1280, 720, "Slavograd");
         BMmini = LoadFont("./BMmini.ttf");
         Texture2D sprite = LoadTexture("./sprite.png");
@@ -223,6 +226,7 @@ int main() {
         Texture2D familia = LoadTexture("./familia.png");
         Texture2D errado = LoadTexture("./errado.png");
         Texture2D certo = LoadTexture("./certo.png");
+
 
         bool mostrarSprite = true;
         bool gameStart = false;
@@ -238,14 +242,15 @@ int main() {
 
         while (!WindowShouldClose()) {
             if (IsKeyPressed(KEY_C)) {
-                mostrarSprite = false;
+            mostrarSprite = false;
             }
 
-            BeginDrawing();
-            ClearBackground(DARKBLUE);
 
-            if (mostrarSprite) {
-                DrawTexture(sprite, 0, 720 - sprite.height, WHITE);
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
+
+            if(mostrarSprite){
+               DrawTexture(sprite, 0, 720 - sprite.height, WHITE);
             } else {
                 DrawTexture(fundo, 0, 0, WHITE);
                 DrawTexture(alea, 960, 300, WHITE);
@@ -258,6 +263,7 @@ int main() {
                 correctButtonHover = true;
 
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+
                     if (tipo == 0) {
                         strcpy(resultMessage, "Voce acertou!");
                     } else {
@@ -265,6 +271,7 @@ int main() {
                     }
                     showResult = true;
                     gameStart = false;
+
                 }
             } else {
                 correctButtonColor = GREEN;
@@ -276,6 +283,7 @@ int main() {
                 incorrectButtonHover = true;
 
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+
                     if (tipo == 1) {
                         strcpy(resultMessage, "Voce acertou!");
                     } else {
@@ -283,11 +291,19 @@ int main() {
                     }
                     showResult = true;
                     gameStart = false;
+
                 }
+
             } else {
                 incorrectButtonColor = RED;
                 incorrectButtonHover = false;
             }
+
+
+            BeginDrawing();
+            ClearBackground(DARKBLUE);
+
+
 
             if (!gameStart && !showResult) {
                 DrawTextEx(BMmini, "aperte C para iniciar!", (Vector2){ 480, 610 }, 30, 1, WHITE);
@@ -301,8 +317,11 @@ int main() {
                     gerar_RG();
                     gerar_Pais();
                     verificar_Documentos();
+
                 }
             } else if (gameStart) {
+                ClearBackground(RAYWHITE);
+
                 DrawTextEx(BMmini, "Sexo: ", (Vector2){ 20, 20 }, 40, 1, WHITE);
                 DrawText(saida_sexo, 150, 20, 35, GOLD);
 
@@ -319,7 +338,7 @@ int main() {
                 DrawText(rg2, 120, 280, 30, GOLD);
 
                 DrawTextEx(BMmini, "Pais: ", (Vector2){ 20, 400 }, 40, 1, WHITE);
-                DrawText(saidapais, 130, 402, 30, GOLD);
+                DrawText(saida_pais, 130, 402, 30, GOLD);
 
                 DrawTextEx(BMmini, "Passe: ", (Vector2){ 20, 450 }, 40, 1, WHITE);
                 DrawText(documento, 170, 452, 30, GOLD);
@@ -329,16 +348,21 @@ int main() {
                 DrawTexture(certo, 605, 505, WHITE);
 
                 DrawRectangleRec(incorrectButtonBounds, incorrectButtonHover ? DARKGRAY : incorrectButtonColor);
-                DrawTextEx(BMmini, "", (Vector2){ incorrectButtonBounds.x + 32, correctButtonBounds.y + 15 }, 30, 1, WHITE);
+                DrawTextEx(BMmini, "", (Vector2){ incorrectButtonBounds.x + 32, incorrectButtonBounds.y + 15 }, 30, 1, WHITE);
                 DrawTexture(errado, 605, 580, WHITE);
+
 
             } else if (showResult) {
                 DrawTextEx(BMmini, resultMessage, (Vector2){ 104, 230 }, 25, 1, WHITE);
                 DrawTextEx(BMmini, "R PARA REINICIAR...", (Vector2){ 48, 260 }, 30, 1, MAROON);
+                DrawTextEx(BMmini, "-", (Vector2){ 47, 270 }, 40, 1, MAROON);
+
+
 
                 if (IsKeyPressed(KEY_R)) {
                     showResult = false;
                     gameStart = true;
+
                     Iniciar_idade();
                     gerar_Dados();
                     gerar_Sexo_E_Nome();
@@ -348,10 +372,8 @@ int main() {
                     verificar_Documentos();
                 }
             }
-
             EndDrawing();
         }
-
         UnloadFont(BMmini);
         UnloadTexture(sprite);
         UnloadTexture(fundo);
@@ -360,6 +382,5 @@ int main() {
         UnloadTexture(casa);
         CloseWindow();
     }
-
     return 0;
 }
